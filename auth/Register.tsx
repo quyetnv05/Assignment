@@ -1,41 +1,36 @@
-// Login.tsx
+import { StyleSheet, Text, View, Image, Dimensions, TextInput, TouchableOpacity, Alert } from 'react-native';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { ParamListBase } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack'; // Import kiểu navigation
+import { ParamListBase } from '@react-navigation/native'; // Import kiểu param list
 
-type LoginScreenNavigationProp = StackNavigationProp<ParamListBase, 'Login'>;
+// Khai báo kiểu navigation cho màn hình Register
+type RegisterScreenNavigationProp = StackNavigationProp<ParamListBase, 'Register'>;
 
-interface LoginProps {
-  navigation: LoginScreenNavigationProp;
+interface RegisterProps {
+  navigation: RegisterScreenNavigationProp; // Khai báo navigation với kiểu đúng
 }
 
 const { width, height } = Dimensions.get('window');
 
-const Login: React.FC<LoginProps> = ({ navigation }) => {
+const Register: React.FC<RegisterProps> = ({ navigation }) => { // Nhận navigation từ props
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPassword] = useState(false);
+  const [isFocusedConfirmPassword, setIsFocusedConfirmPassword] = useState(false);
 
-  const handleLogin = () => {
-    // Kiểm tra thông tin đăng nhập
-    if (email === '' || password === '') {
-      Alert.alert('Lỗi', 'Vui lòng nhập email và mật khẩu!');
-    } else {
-      Alert.alert('Thông báo', 'Đăng nhập thành công!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            // Điều hướng đến màn hình chính (Home) sau khi đăng nhập thành công
-            navigation.replace('Home');
-          },
-        },
-      ]);
+  const handleRegister = () => {
+    if (password !== confirmPassword) {
+      Alert.alert("Lỗi", "Mật khẩu xác nhận không khớp!");
+      return;
     }
+    Alert.alert("Thông báo", "Đăng ký thành công!");
+    // Thực hiện đăng ký ở đây
   };
 
   return (
@@ -43,15 +38,15 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
       {/* Logo */}
       <Image style={styles.image} source={require('@/assets/images/logo_login.png')} />
 
-      {/* Nội dung */}
+      {/* Tiêu đề */}
       <View style={styles.content}>
         <Text style={styles.text}>CHÀO MỪN BẠN</Text>
-        <Text style={styles.textLogin}>Đăng nhập tài khoản</Text>
+        <Text style={styles.textLogin}>Đăng ký tài khoản</Text>
 
         {/* Input Email */}
         <TextInput
           style={[styles.input, isFocusedEmail && styles.inputFocused]}
-          placeholder="Nhập email hoặc số điện thoại"
+          placeholder="Nhập email"
           placeholderTextColor="#666"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -78,32 +73,46 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Nút Đăng nhập */}
-        <TouchableOpacity onPress={handleLogin} activeOpacity={0.8}>
+        {/* Input Xác nhận Mật khẩu */}
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={[styles.input, isFocusedConfirmPassword && styles.inputFocused]}
+            placeholder="Xác nhận mật khẩu"
+            placeholderTextColor="#666"
+            secureTextEntry={!showConfirmPass}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            onFocus={() => setIsFocusedConfirmPassword(true)}
+            onBlur={() => setIsFocusedConfirmPassword(false)}
+          />
+          <TouchableOpacity onPress={() => setShowConfirmPass(!showConfirmPass)} style={styles.toggleButton}>
+            <Ionicons name={showConfirmPass ? 'eye' : 'eye-off'} size={24} color="#666" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Nút Đăng ký */}
+        <TouchableOpacity onPress={handleRegister} activeOpacity={0.8}>
           <LinearGradient colors={["#007537", "#4CAF50"]} style={styles.button}>
-            <Text style={styles.buttonText}>Đăng nhập</Text>
+            <Text style={styles.buttonText}>Đăng ký</Text>
           </LinearGradient>
         </TouchableOpacity>
-
-        {/* Dòng "Hoặc" */}
+        
         <View style={styles.lineWrapper}>
           <View style={styles.line} />
           <Text style={styles.or}>Hoặc</Text>
           <View style={styles.line} />
         </View>
-
-        {/* Đăng nhập qua Google và Facebook */}
+        
         <View style={styles.socialLogin}>
           <Image style={styles.Logo} source={require('@/assets/images/google_icon-icons.webp')} />
           <Image style={styles.Logo} source={require('@/assets/images/facebook_logo_icon_147291.webp')} />
         </View>
 
-        {/* Tạo tài khoản */}
         <View>
           <Text style={styles.texttext}>
-            Bạn chưa có tài khoản?{' '}
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.link}>Tạo tài khoản</Text>
+            Bạn đã có tài khoản?{' '}
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.link}>Đăng nhập</Text>
             </TouchableOpacity>
           </Text>
         </View>
@@ -112,17 +121,17 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    top: -40,
+    alignItems: "center",
+    justifyContent: "center",
+    top:-40
   },
   content: {
-    top: 120,
+    top: 100,
   },
   image: {
     width: 550,
@@ -131,8 +140,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 100,
     transform: [{ rotate: '-30deg' }],
     position: 'absolute',
-    top: -200,
-    left: -150,
+    top: -255,
+    left: -100,
     overflow: 'hidden',
   },
   text: {
@@ -143,7 +152,7 @@ const styles = StyleSheet.create({
   },
   textLogin: {
     fontSize: 20,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
     left: 60,
     top: -10,
@@ -164,11 +173,11 @@ const styles = StyleSheet.create({
     borderColor: '#009245',
   },
   passwordContainer: {
-    position: 'relative',
+    position: "relative",
     width: width * 0.8,
   },
   toggleButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 15,
     top: -9,
   },
@@ -176,13 +185,13 @@ const styles = StyleSheet.create({
     width: width * 0.8,
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     top: -20,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   lineWrapper: {
     flexDirection: 'row',
@@ -190,11 +199,11 @@ const styles = StyleSheet.create({
   },
   line: {
     height: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#000', // Màu đường kẻ
     flex: 1,
   },
   or: {
-    marginHorizontal: 10,
+    marginHorizontal: 10, // Khoảng cách giữa chữ và đường kẻ
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -202,21 +211,21 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     top: 10,
-    justifyContent: 'center',
+    justifyContent: 'center', // Căn giữa hai logo
     alignItems: 'center',
     marginHorizontal: 10,
   },
   socialLogin: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'center', // Căn giữa hai logo
     alignItems: 'center',
   },
   link: {
-    color: 'blue',
+    color: 'blue', // Màu xanh cho chữ "Đăng nhập"
     top: 4,
   },
   texttext: {
     top: 20,
-    textAlign: 'center',
+    textAlign:"center"
   },
 });
