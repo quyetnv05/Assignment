@@ -7,6 +7,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Login from './auth/login'; // Màn hình đăng nhập
 import Register from './auth/Register'; // Màn hình đăng ký
 import PlantShopApp from './plants/PlantShopApp '; // Màn hình chính sau khi đăng nhập
+import plantlisttree from './plants/PlantsListTrees';
+import Detail from './plants/PlantDetailScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,6 +30,16 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Home"
           component={PlantShopApp} // Đây là màn hình chính sau khi đăng nhập
+          options={{ headerShown: false }}
+        />
+           <Stack.Screen
+          name="List"
+          component={plantlisttree} 
+          options={{ headerShown: false }}
+        />
+              <Stack.Screen
+          name="PlantDetail"
+          component={Detail} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
